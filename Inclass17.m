@@ -9,10 +9,14 @@ disp('start')
 
 img1 = imread('img1.tif');
 img2 = imread('img2.tif');
+
+img1_edit = img1(401:end,401:end);
+img2_edit = img2(1:400,1:400);
+
 %Checking the orientation to see how the images might overlap
 q = q+1;figure(q);
-subplot(1,2,1);imshow(img1,[]);
-subplot(1,2,2);imshow(img2,[]);
+subplot(1,2,1);imshow(img1_edit,[]);
+subplot(1,2,2);imshow(img2_edit,[]);
 
 
 %Checking overlap along each of the image edges. 
@@ -52,27 +56,32 @@ end
 q = q+1;figure(q);plot(corr);
 xlabel('Overlap','FontSize',28);ylabel('Mean difference');
 
-%None of these images seem to do the trick...
+%None of these images seem to do the trick... The overlap must be on the
+%corner.
 
 
 %Check and perform overlapping at the corner
-img1fft = fft2(img1); img2fft = fft2(img2);
+img1fft = fft2(img1_edit); img2fft = fft2(img2_edit);
 [nr,nc] = size(img2fft);
 CC = ifft2(img1fft.*conj(img2fft));
 CCabs = abs(CC);
 q = q+1;figure(q); imshow(CCabs,[]);
 
-[row_shift, col_shift] = find(CCabs == max(CCabs(:)));
+[row_shift, col_shift] = find(CCabs == max(CCabs(:)))
 Nr = ifftshift(-fix(nr/2):ceil(nr/2)-1);
 Nc = ifftshift(-fix(nc/2):ceil(nc/2)-1);
 
-row_shift = Nr(row_shift);
-col_shift = Nc(col_shift);
+row_shift = Nr(row_shift)
+col_shift = Nc(col_shift)
 
-img_shift = zeros(size(img2)+[row_shift,col_shift]);
-img_shift((end-799):end,(end-799:end)) = img2;
+%The purpose of the multiple of three is to accoun for the diminished size
+%of the edited images. Beacuse each image was reduced by half the size, the
+%row/column shifts need to be multiplied by two, plus the shift to account
+%for the adjustment in overlap size. 
+img_shift = zeros(size(img2)+[-row_shift*3,-col_shift*3]);
+img_shift((end-799):end,(end-799):end) = img2;
 
-figure; imshowpair(img1,img_shift);
+q = q+1;figure(q); imshowpair(img1,img_shift);
 
-%%
+
 
