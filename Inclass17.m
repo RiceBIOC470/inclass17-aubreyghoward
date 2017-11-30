@@ -1,7 +1,32 @@
+%GB comments
+1. 75. Close! Please find my notes below to fix your problem. 
+2. 100 
+Overall 88
+Notes: 
+diffs= zeros(200,200);
+for  ov1= 1:400;
+    for ov2= 1:400;
+        pix1=img1((end-ov1):end,(end-ov2):end);
+        pix2=img2(1:(1+ov1),1:(1+ov2));
+        diffs(ov1,ov2)=sum(sum(abs(pix1-pix2)))/(ov1*ov2);
+    end
+end
+figure; plot(diffs);
+minMatrix = min(diffs(:));
+[ovX, ovY]=find(diffs==minMatrix);
+ovX = 199;
+ovY=199;
+img2_align = [zeros(800, size(img2,2)-ovY+1),img2];
+img2_align=[zeros(size(img2,1)-ovX+1,size(img2_align,2)); img2_align];
+imshowpair(img1,img2_align);
+
+
 %In this folder, you will find two images img1.tif and img2.tif that have
 %some overlap. Use two different methods to align them - the first based on
 %pixel values in the original images and the second using the fourier
 %transform of the images. In both cases, display your results. 
+
+
 clear all;
 q = 0;
 disp('start')
